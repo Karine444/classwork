@@ -27,7 +27,7 @@ Run Docker on AMI
   After creating the AMI, use the Docker files located in the docker folder to set up the required environment on the newly created AMI. This ensures that the Dockerized application can run seamlessly.
 
 Provision EC2 Instance with Terraform
-  Navigate to the terraform folder and follow the instructions in the README to provision an EC2 instance on AWS using Terraform. Specify the previously created AMI as the base image for the instance.
+  Specify the previously created AMI as the base image for the instance.
 
 Run Deployment Script
   Once the EC2 instance is provisioned, use the deploy_application.sh script in the main project folder to execute all necessary actions for deploying the application.
