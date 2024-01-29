@@ -10,9 +10,6 @@ if [[ $? -ne 0 ]]; then
   exit 1
 fi
 
-# Change directory back to the project root
-cd ..
-
 # Change directory to terraform/
 cd ../terraform/ || exit 1
 
