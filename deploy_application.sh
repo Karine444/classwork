@@ -1,7 +1,5 @@
 #!/bin/bash
 
-AWS_DEFAULT_REGION="us-east-1"
-
 # Change directory to packer/
 cd ./packer/ || exit 1
 
