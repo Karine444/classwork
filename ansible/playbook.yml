@@ -1,0 +1,57 @@
+- hosts: all
+  become: true
+  vars:
+    ansible_ssh_common_args: '-o HostKeyAlgorithms=+ssh-rsa'
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: "yes"
+        force_apt_get: "yes"
+
+    - name: Install dependencies
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg
+        - lsb-release
+        - git
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Save the current Ubuntu release version into a variable
+      shell: lsb_release -cs
+      register: ubuntu_version
+
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_version.stdout }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Clone awesome-compose repository
+      git:
+        repo: https://github.com/docker/awesome-compose.git
+        dest: "{{ playbook_dir }}/awesome-folder"
+
+    - name: Add Werkzeug to requirements.txt
+      lineinfile:
+        path: "{{ playbook_dir }}/awesome-folder/nginx-flask-mysql/backend/requirements.txt"
+        line: "Werkzeug==2.2.2"
+        insertafter: EOF
+
+    - name: Change directory to nginx-flask-mysql and run docker-compose up --build
+      command: docker compose  up --build -d
+      args:
+        chdir: "{{ playbook_dir }}/awesome-folder/nginx-flask-mysql"
