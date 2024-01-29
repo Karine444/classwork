@@ -1,0 +1,53 @@
+name: Provision t2.micro EC2
+
+on:
+  workflow_dispatch:
+    inputs:
+      ec2-name:
+        description: New EC2
+        required: true
+        default: 'App Server'
+        type: string
+
+jobs:
+  provision-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: '${{ secrets.AWS_REGION }}'
+
+      - name: Install Packer
+        run: |
+          wget "https://releases.hashicorp.com/packer/1.8.7/packer_1.8.7_linux_amd64.zip"
+          unzip -o "packer_1.8.7_linux_amd64.zip" -d packer
+          sudo mv packer/packer /usr/local/bin/
+          packer --version
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Create SSH Config File
+        run: |
+          mkdir -p ~/.ssh
+          echo "Host 127.0.0.1" > ~/.ssh/config
+          echo "  HostKeyAlgorithms +ssh-rsa" >> ~/.ssh/config
+          echo "  PubkeyAcceptedKeyTypes +ssh-rsa" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Terraform Apply
+        run: ./deploy_application.sh
