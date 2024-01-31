@@ -12,7 +12,7 @@
         "most_recent": true
       },
       "instance_type": "t2.micro",
-      "ami_name": "custom-ami"
+      "ami_name": "classwork_20_01_24"
     }
   ],
   "provisioners": [
