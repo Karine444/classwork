@@ -3,6 +3,6 @@ data "aws_ami" "myImage" {
 
   owners = ["self"]
   tags = {
-    Name   = "custom-ami"
+    Name   = "classwork_20_01_24"
   }
 }
